@@ -1,0 +1,10 @@
+# Environment Variables
+.env
+
+# Credentials and Secrets
+credentials.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class

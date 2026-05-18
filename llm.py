@@ -3,7 +3,7 @@ from google import genai
 from dotenv import load_dotenv
 
 load_dotenv()
-os.environ["GEMINI_API_KEY"] = "____"
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 
 # value = 5
@@ -12,7 +12,7 @@ os.environ["GEMINI_API_KEY"] = "____"
 # print(os.getenv("GEMINI_API_KEY"))
 
 # Initialize the GenAI client with the API key from environment variables
-client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 # response = client.models.generate_content(
 #     model="gemini-3-flash-preview",
