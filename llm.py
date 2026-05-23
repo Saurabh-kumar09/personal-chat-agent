@@ -1,18 +1,10 @@
-import os
-from google import genai
-from dotenv import load_dotenv
-
-load_dotenv()
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-
+# Gemini AI integration
+from integrations.gemini_config import client
 
 # value = 5
 # print(value)
 # print(os.getenv("value_variable"))
 # print(os.getenv("GEMINI_API_KEY"))
-
-# Initialize the GenAI client with the API key from environment variables
-client = genai.Client(api_key=GEMINI_API_KEY)
 
 # response = client.models.generate_content(
 #     model="gemini-3-flash-preview",

@@ -1,17 +1,11 @@
-"""Configurations for the Google Sheets API and Gemini API"""
+"""Google Sheets API Configuration"""
 
 import os
-from google import genai
 from dotenv import load_dotenv
 import gspread
 from google.oauth2.service_account import Credentials
 
 load_dotenv()
-
-# llm - Google Gemini API key setup and client initialization
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-client = genai.Client(api_key=GEMINI_API_KEY)
-print("Gemini API client initialized successfully!")
 
 # Google sheet api authentication and setup
 SCOPES = [

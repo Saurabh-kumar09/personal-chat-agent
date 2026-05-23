@@ -1,26 +1,6 @@
-import os
-import gspread
-from google.oauth2.service_account import Credentials
-from dotenv import load_dotenv
+# Google Sheets integration utilities
+from integrations.sheets_config import sheet
 
-load_dotenv()
-
-# Define scope
-SCOPES = [
-    os.getenv("GOOGLE_SHEETS_SCOPE", "https://www.googleapis.com/auth/spreadsheets")
-]
-
-# Load credentials
-CREDENTIALS_FILE = os.getenv("GOOGLE_CREDENTIALS_FILE", "credentials.json")
-creds = Credentials.from_service_account_file(CREDENTIALS_FILE, scopes=SCOPES)
-client = gspread.authorize(creds)
-# sheet = client.create("dummy_sheet").sheet1
-# sheet = client.open("dummy_sheet").sheet1
-# sheet.update([[1, 2], [3, 4]], "A1")
-# print(sheet.get_all_values())
-GOOGLE_SHEET_ID = os.getenv("GOOGLE_SHEET_ID")
-sheet = client.open_by_key(GOOGLE_SHEET_ID)  # connected
-print("Connected successfully!")
 # values_update
 # sheet1 = sheet.values_update(
 #     "A1",
