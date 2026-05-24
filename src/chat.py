@@ -13,7 +13,7 @@ from src.store_text import save_text_to_sheet
 
 
 # Command to start the bot
-async def initiate_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def handle_start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text("""👋 Hey! How can I help you today?
         Choose a task to continue:
         1. 🤖 AI Chat
@@ -23,14 +23,14 @@ async def initiate_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 # Command to start ai chat
-async def chat_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def handle_chat_mode_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "You can start your chat with ai - just type your message!"
     )
 
 
 # Command to save text in sheet
-async def sheet_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def handle_sheet_save_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "You can save text in the sheet - just type your message!"
     )
@@ -48,7 +48,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     print(f'Bot: "{reply}"')
 
 
-async def save_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def save_message_to_sheet(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_type: str = update.message.chat.type
     text: str = update.message.text
 
@@ -66,12 +66,12 @@ def main():
     app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
 
     # Register command handlers
-    app.add_handler(CommandHandler("start", initiate_command))
-    app.add_handler(CommandHandler("1", chat_command))
-    app.add_handler(CommandHandler("2", sheet_command))
+    app.add_handler(CommandHandler("start", handle_start_command))
+    app.add_handler(CommandHandler("1", handle_chat_mode_command))
+    app.add_handler(CommandHandler("2", handle_sheet_save_command))
 
     # Listen to all text messages
-    app.add_handler(MessageHandler(filters.TEXT, save_message))
+    app.add_handler(MessageHandler(filters.TEXT, save_message_to_sheet))
 
     print("Bot is running...")
 

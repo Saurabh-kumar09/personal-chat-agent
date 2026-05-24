@@ -10,11 +10,11 @@ conversation = []
 
 while True:  # infinite loop to keep the conversation going until the user types 'exit'
 
-    getSheet = sheet.get_worksheet(0)
+    worksheet = sheet.get_worksheet(0)
     user_input = input("you: ")
     if user_input.lower() != "exit":
         # do not add "exit" command in sheet
-        ques = getSheet.append_row([user_input])
+        row_data = worksheet.append_row([user_input])
         conversation.append(user_input)
     else:
         print("Conversation ended.")
