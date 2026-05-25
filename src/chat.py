@@ -36,24 +36,28 @@ async def handle_sheet_save_command(update: Update, context: ContextTypes.DEFAUL
     )
 
 
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+# Helper function to handle user messages and return the message text
+async def user_message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_type: str = update.message.chat.type
     text: str = update.message.text
 
     user_message = update.message.text
     print(f'User ({update.message.chat.id}) in {chat_type}: "{text}"')
+    return user_message
+
+
+# Handler for ai chat with user - receives user message, gets ai response and sends it back to user
+async def handle_ai_chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_message = await user_message_handler(update, context)
     reply = ask_ai(user_message)
 
     await update.message.reply_text(reply)
     print(f'Bot: "{reply}"')
 
 
+# Handler to save user message to sheet - receives user message, saves it to sheet and sends confirmation back to user
 async def save_message_to_sheet(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    chat_type: str = update.message.chat.type
-    text: str = update.message.text
-
-    user_message = update.message.text
-    print(f'User ({update.message.chat.id}) in {chat_type}: "{text}"')
+    user_message = await user_message_handler(update, context)
     save_text_to_sheet(user_message)
 
     await update.message.reply_text("Your message has been saved to the sheet!")
@@ -76,7 +80,3 @@ def main():
     print("Bot is running...")
 
     app.run_polling()
-
-
-if __name__ == "__main__":
-    main()
