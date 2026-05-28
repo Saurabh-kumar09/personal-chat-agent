@@ -3,8 +3,9 @@ Phase - Building while Learning
 Done so far - LLM (Gemini) integration, sheet integration, prompt modification, telegram bot integration
 
 Features:
-AI chat
+AI chat </br>
 Save important links/ideas to sheet
+URL summarize
 Memory Retrieval (up next)
 
 
