@@ -44,6 +44,20 @@ def save_to_sheet(save_function, success_message):
     return decorator
 
 
+"Utility functions"
+
+
+# Helper function to handle user messages and return the message text
+async def handle_user_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    chat_type: str = update.message.chat.type
+    text: str = update.message.text
+
+    user_message = update.message.text
+    print(f'User ({update.message.chat.id}) in {chat_type}: "{text}"')
+    return user_message
+
+
+# Function to extract text content from a URL using requests and BeautifulSoup
 def extract_text_from_url(url):
     response = requests.get(url)
 
@@ -61,6 +75,7 @@ def extract_text_from_url(url):
     return text
 
 
+# Function to summarize content from a URL using the ask_ai function with a structured prompt
 def summarize_url(url, word_limit=100):
     article_text = extract_text_from_url(url)
 
@@ -93,27 +108,7 @@ def summarize_url(url, word_limit=100):
     return result
 
 
-# Command to start the bot
-async def handle_start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("""👋 Hey! How can I help you today?
-
-Choose a task to continue:
-
-1️⃣ **AI Chat** - Ask me anything! (Select Command: `/1`)
-2️⃣ **Sheet-Thought** - Save your thoughts to sheet (Select Command: `/2`)
-3️⃣ **To-Do** - Manage your to-do list (Select Command: `/3`)
-
-Type the command to get started! 🚀""")
-
-
-# Helper function to handle user messages and return the message text
-async def handle_user_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    chat_type: str = update.message.chat.type
-    text: str = update.message.text
-
-    user_message = update.message.text
-    print(f'User ({update.message.chat.id}) in {chat_type}: "{text}"')
-    return user_message
+"Feature Handlers"
 
 
 # Handler for ai chat with user - receives user message, gets ai response and sends it back to user
@@ -125,23 +120,32 @@ async def handle_ai_chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     print(f'Bot: "{reply}"')
 
 
+# Handlers for saving thoughts and todos to sheets
 @save_to_sheet(add_thoughts_to_sheet, "Thought saved!")
-def save_thought():
+def save_thought(update, context):
     pass
 
 
 @save_to_sheet(add_todo_to_sheet, "Todo saved!")
-def save_todo():
+def save_todo(update, context):
     pass
 
+
+# Handler for summarizing content from a URL
 async def handle_summarize_url(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_message = await handle_user_message(update, context)
     if not user_message.startswith("http"):
-        await update.message.reply_text("Please send a valid URL starting with http or https.")
+        await update.message.reply_text(
+            "Please send a valid URL starting with http or https."
+        )
         return
     summary = summarize_url(user_message)
     await update.message.reply_text(summary)
     print(f'Bot: "{summary}"')
+
+
+"Routing Handlers"
+
 
 # Handler to process user command for mode selection - receives user message, sets mode in user_data and sends confirmation back to user
 async def handle_user_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -176,11 +180,12 @@ async def handle_user_command(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     else:
         await update.message.reply_text(
-            "Invalid choice. Please type 1 for AI Chat, 2 for Sheet-Thought, or 3 for To-Do."
+            "Invalid choice. Please select a valid option by command: /1, /2, /3 or /4"
         )
 
 
-# Handler to route messages based on user-selected mode - receives user message, checks mode in user_data and routes to appropriate handler
+# Handler to route messages based on user-selected mode - receives user message,
+# checks mode in user_data and routes to appropriate handler
 async def handle_mode_specific_message(
     update: Update, context: ContextTypes.DEFAULT_TYPE
 ):
@@ -200,7 +205,21 @@ async def handle_mode_specific_message(
         )
 
 
-# Main function
+# startup handler
+async def handle_start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("""👋 Hey! How can I help you today?
+
+Choose a task to continue:
+
+1️⃣ **AI Chat** - Ask me anything! (Select Command: `/1`)
+2️⃣ **Sheet-Thought** - Save your thoughts to sheet (Select Command: `/2`)
+3️⃣ **To-Do** - Manage your to-do list (Select Command: `/3`)
+4️⃣ **Summarize URL** - Get a summary of a webpage (Select Command: `/4`)
+
+Type the command to get started! 🚀""")
+
+
+# Main function to set up the bot, register handlers and start polling for updates
 def main():
 
     app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
@@ -217,7 +236,9 @@ def main():
     )
 
     # Listen to all other text messages and route based on mode (LAST - most general)
-    app.add_handler(MessageHandler(filters.TEXT, handle_mode_specific_message))
+    app.add_handler(
+        MessageHandler(filters.TEXT & ~filters.COMMAND, handle_mode_specific_message)
+    )
 
     print("Bot is running...")
 
