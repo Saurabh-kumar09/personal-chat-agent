@@ -11,6 +11,8 @@ from src.ai_ask import ask_ai
 from integrations.telegram_config import TELEGRAM_BOT_TOKEN
 from src.save_to_sheet import add_thoughts_to_sheet, add_todo_to_sheet
 from functools import wraps
+import requests
+from bs4 import BeautifulSoup
 
 
 # Decorator factory for handlers that save content to sheets
@@ -40,6 +42,55 @@ def save_to_sheet(save_function, success_message):
         return wrapper
 
     return decorator
+
+
+def extract_text_from_url(url):
+    response = requests.get(url)
+
+    soup = BeautifulSoup(response.text, "html.parser")
+
+    # Remove unwanted tags
+    for tag in soup(["script", "style", "nav", "footer"]):
+        tag.decompose()
+
+    text = soup.get_text(separator=" ")
+
+    # Clean extra spaces
+    text = " ".join(text.split())
+
+    return text
+
+
+def summarize_url(url, word_limit=100):
+    article_text = extract_text_from_url(url)
+
+    prompt = f"""
+    Analyze the following webpage content.
+
+    Return response in this format:
+
+    Topic:
+    <one-line topic>
+
+    Summary:
+    1. ...
+    2. ...
+    3. ...
+    4. ...
+    5. ...
+    Rules:
+    - Keep response within {word_limit} words
+    - Keep points short and informative
+    - Avoid repetition
+    - Do not include conclusion
+    
+    Webpage Content:
+    {article_text[:15000]}
+    """
+
+    result = ask_ai(prompt)
+
+    return result
 
 
 # Command to start the bot
@@ -83,6 +134,14 @@ def save_thought():
 def save_todo():
     pass
 
+async def handle_summarize_url(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_message = await handle_user_message(update, context)
+    if not user_message.startswith("http"):
+        await update.message.reply_text("Please send a valid URL starting with http or https.")
+        return
+    summary = summarize_url(user_message)
+    await update.message.reply_text(summary)
+    print(f'Bot: "{summary}"')
 
 # Handler to process user command for mode selection - receives user message, sets mode in user_data and sends confirmation back to user
 async def handle_user_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -109,6 +168,12 @@ async def handle_user_command(update: Update, context: ContextTypes.DEFAULT_TYPE
             "You can manage your to-do list - just type your message!"
         )
 
+    elif user_choice == "4":
+        context.user_data["mode"] = "summarize_url"
+        await update.message.reply_text(
+            "You can summarize content from a URL - just send the URL!"
+        )
+
     else:
         await update.message.reply_text(
             "Invalid choice. Please type 1 for AI Chat, 2 for Sheet-Thought, or 3 for To-Do."
@@ -127,6 +192,8 @@ async def handle_mode_specific_message(
         await save_thought(update, context)
     elif mode == "to_do":
         await save_todo(update, context)
+    elif mode == "summarize_url":
+        await handle_summarize_url(update, context)
     else:
         await update.message.reply_text(
             "Select '/start' command to get started and for instructions on how to use the bot!"
@@ -144,7 +211,7 @@ def main():
     # Handler for user choice of mode - only matches 1, 2, 3, /1, /2, /3 (FIRST - most specific)
     app.add_handler(
         MessageHandler(
-            filters.TEXT & filters.Regex(r"^/?([123])$"),
+            filters.TEXT & filters.Regex(r"^/?([1234])$"),
             handle_user_command,
         )
     )
