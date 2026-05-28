@@ -9,7 +9,37 @@ from telegram.ext import (
 
 from src.ai_ask import ask_ai
 from integrations.telegram_config import TELEGRAM_BOT_TOKEN
-from src.store_text import save_text_to_sheet
+from src.save_to_sheet import add_thoughts_to_sheet, add_todo_to_sheet
+from functools import wraps
+
+
+# Decorator factory for handlers that save content to sheets
+def save_to_sheet(save_function, success_message):
+    """
+    Decorator factory that wraps handlers to save content to sheets.
+
+    Args:
+        save_function: Function to call for saving (e.g., add_thoughts_to_sheet, add_todo_to_sheet)
+        success_message: Message to send back to user after successful save
+
+    Returns:
+        A decorator that wraps async handler functions
+    """
+
+    def decorator(handler_func):
+        @wraps(handler_func)
+        async def wrapper(update: Update, context: ContextTypes.DEFAULT_TYPE):
+            # Get user message
+            user_message = await handle_user_message(update, context)
+            # Save to sheet using provided function
+            save_function(user_message)
+            # Send confirmation to user
+            await update.message.reply_text(success_message)
+            print(f"Bot: {success_message}")
+
+        return wrapper
+
+    return decorator
 
 
 # Command to start the bot
@@ -44,13 +74,14 @@ async def handle_ai_chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     print(f'Bot: "{reply}"')
 
 
-# Handler to save user message to sheet - receives user message, saves it to sheet and sends confirmation back to user
-async def save_message_to_sheet(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_message = await handle_user_message(update, context)
-    save_text_to_sheet(user_message)
+@save_to_sheet(add_thoughts_to_sheet, "Thought saved!")
+def save_thought():
+    pass
 
-    await update.message.reply_text("Your message has been saved to the sheet!")
-    print("Bot: Your message has been saved to the sheet!")
+
+@save_to_sheet(add_todo_to_sheet, "Todo saved!")
+def save_todo():
+    pass
 
 
 # Handler to process user command for mode selection - receives user message, sets mode in user_data and sends confirmation back to user
@@ -93,12 +124,9 @@ async def handle_mode_specific_message(
     if mode == "ai_chat":
         await handle_ai_chat(update, context)
     elif mode == "sheet_save":
-        await save_message_to_sheet(update, context)
+        await save_thought(update, context)
     elif mode == "to_do":
-        # Here you would implement your to-do list handling logic
-        await update.message.reply_text(
-            "To-Do list functionality is not implemented yet."
-        )
+        await save_todo(update, context)
     else:
         await update.message.reply_text(
             "Select '/start' command to get started and for instructions on how to use the bot!"
