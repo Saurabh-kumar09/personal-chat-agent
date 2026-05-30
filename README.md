@@ -6,10 +6,10 @@ Features:
 - AI chat <br>
 - Save important links/ideas to sheet <br>
 - URL summarize <br>
-- Memory Retrieval (up next)
+- Memory Retrieval (WIP)
 
 
-29-5-2026:
-up next: improvise current features and code improvement
+30-5-2026:
+up next: add short-term memory support in the chatbot to enable context-aware and session-persistent interactions.
 
 Queued tasks: v1 integration arc - feature completion + code cleanup
