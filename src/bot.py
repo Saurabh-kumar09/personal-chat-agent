@@ -9,7 +9,11 @@ from telegram.ext import (
 
 from src.chat_engine import generate_chat_response
 from integrations.telegram_config import TELEGRAM_BOT_TOKEN
-from src.save_to_sheet import add_thoughts_to_sheet, add_todo_to_sheet
+from src.save_to_sheet import (
+    add_thoughts_to_sheet,
+    add_todo_to_sheet,
+    add_url_to_sheet,
+)
 from functools import wraps
 import requests
 from bs4 import BeautifulSoup
@@ -98,6 +102,7 @@ def summarize_url(url, word_limit=100):
     - Keep points short and informative
     - Avoid repetition
     - Do not include conclusion
+    - Make sure you follow instruction_prompt rules for summarization 
     
     Webpage Content:
     {article_text[:15000]}
@@ -139,6 +144,7 @@ async def handle_summarize_url(update: Update, context: ContextTypes.DEFAULT_TYP
             "Please send a valid URL starting with http or https."
         )
         return
+    add_url_to_sheet(user_message, "URL for summarization")
     summary = summarize_url(user_message)
     await update.message.reply_text(summary)
     print(f'Bot: "{summary}"')
