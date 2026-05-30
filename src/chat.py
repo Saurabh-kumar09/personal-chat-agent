@@ -7,7 +7,7 @@ from telegram.ext import (
     ContextTypes,
 )
 
-from src.ai_ask import ask_ai
+from src.chat_engine import ask_ai
 from integrations.telegram_config import TELEGRAM_BOT_TOKEN
 from src.save_to_sheet import add_thoughts_to_sheet, add_todo_to_sheet
 from functools import wraps
