@@ -7,7 +7,7 @@ from telegram.ext import (
     ContextTypes,
 )
 
-from src.chat_engine import ask_ai
+from src.chat_engine import generate_chat_response
 from integrations.telegram_config import TELEGRAM_BOT_TOKEN
 from src.save_to_sheet import add_thoughts_to_sheet, add_todo_to_sheet
 from functools import wraps
@@ -75,7 +75,7 @@ def extract_text_from_url(url):
     return text
 
 
-# Function to summarize content from a URL using the ask_ai function with a structured prompt
+# Function to summarize content from a URL using the generate_chat_response function with a structured prompt
 def summarize_url(url, word_limit=100):
     article_text = extract_text_from_url(url)
 
@@ -103,7 +103,7 @@ def summarize_url(url, word_limit=100):
     {article_text[:15000]}
     """
 
-    result = ask_ai(prompt)
+    result = generate_chat_response(prompt)
 
     return result
 
@@ -114,7 +114,7 @@ def summarize_url(url, word_limit=100):
 # Handler for ai chat with user - receives user message, gets ai response and sends it back to user
 async def handle_ai_chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_message = await handle_user_message(update, context)
-    reply = ask_ai(user_message)
+    reply = generate_chat_response(user_message)
 
     await update.message.reply_text(reply)
     print(f'Bot: "{reply}"')

@@ -4,7 +4,7 @@ import prompts.system_prompt as instruction
 conversation = []
 
 
-def ask_ai(user_message):
+def generate_chat_response(user_message):
 
     # store current user message
     conversation.append(f"User: {user_message}")
