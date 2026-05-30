@@ -82,11 +82,14 @@ def extract_text_from_url(url):
 # Function to summarize content from a URL using the generate_chat_response function with a structured prompt
 def summarize_url(url, word_limit=100):
     article_text = extract_text_from_url(url)
+    keyword = ""
 
     prompt = f"""
     Analyze the following webpage content.
 
     Return response in this format:
+    
+    KEYWORD: <one relevant keyword>
 
     Topic:
     <one-line topic>
@@ -102,7 +105,14 @@ def summarize_url(url, word_limit=100):
     - Keep points short and informative
     - Avoid repetition
     - Do not include conclusion
-    - Make sure you follow instruction_prompt rules for summarization 
+    - Make sure you follow instruction_prompt rules for summarization
+    - Do not include the keyword inside summary points
+    
+    KEYWORD: <one relevant keyword from the content>
+    Rules for KEYWORD:
+    - Get one releavant keyword from the content and include it in the {keyword} field
+    - Do not include keyword in summary points
+    - The keyword should be relevant to the content and useful for categorization
     
     Webpage Content:
     {article_text[:15000]}
@@ -110,7 +120,25 @@ def summarize_url(url, word_limit=100):
 
     result = generate_chat_response(prompt)
 
-    return result
+    lines = result.splitlines()
+
+    keyword = ""
+    cleaned_response = []
+
+    for line in lines:
+
+        if line.startswith("KEYWORD:"):
+            keyword = line.replace("KEYWORD:", "").strip()
+
+        else:
+            cleaned_response.append(line)
+
+    summary = "\n".join(cleaned_response).strip()
+
+    return {
+        "summary": summary,
+        "keyword": keyword,
+    }
 
 
 "Feature Handlers"
@@ -144,8 +172,12 @@ async def handle_summarize_url(update: Update, context: ContextTypes.DEFAULT_TYP
             "Please send a valid URL starting with http or https."
         )
         return
-    add_url_to_sheet(user_message, "URL for summarization")
-    summary = summarize_url(user_message)
+
+    result = summarize_url(user_message)
+    summary = result["summary"]
+    keyword = result["keyword"]
+    print(f"Extracted keyword: {keyword}")
+    add_url_to_sheet(user_message, keyword)
     await update.message.reply_text(summary)
     print(f'Bot: "{summary}"')
 
