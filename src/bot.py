@@ -85,36 +85,59 @@ def summarize_url(url, word_limit=100):
     keyword = ""
 
     prompt = f"""
-    Analyze the following webpage content.
-
-    Return response in this format:
+    Analyze the following webpage content and extract:
+    1. one strong categorization keyword
+    2. the main topic
+    3. a concise 5-point summary
     
-    KEYWORD: <one relevant keyword>
-
-    Topic:
-    <one-line topic>
-
-    Summary:
+    TASK:
+    - Understand the core subject of the webpage
+    - Identify the most meaningful keyword for categorization
+    - Summarize the content clearly and concisely
+    
+    OUTPUT FORMAT:
+    KEYWORD: <single categorization keyword>
+    
+    TOPIC:
+    <one-line topic summary>
+    
+    SUMMARY:
     1. ...
     2. ...
     3. ...
     4. ...
     5. ...
-    Rules:
-    - Keep response within {word_limit} words
-    - Keep points short and informative
+    
+    KEYWORD RULES:
+    - Return ONLY one keyword
+    - The keyword should represent the main category or domain of the content
+    - Prefer specific and meaningful keywords over generic ones
+    - Avoid overly broad keywords like:
+      - Technology
+      - AI
+      - News
+      - Business
+    - Prefer keywords useful for tagging, grouping, or organizing content
+    - Do not repeat the keyword inside summary points
+    - Keep keyword short and clean
+    
+    SUMMARY RULES:
+    - Keep the full response within {word_limit} words
+    - Keep points short, informative, and readable
     - Avoid repetition
-    - Do not include conclusion
-    - Make sure you follow instruction_prompt rules for summarization
-    - Do not include the keyword inside summary points
-    
-    KEYWORD: <one relevant keyword from the content>
-    Rules for KEYWORD:
-    - Get one releavant keyword from the content and include it in the {keyword} field
-    - Do not include keyword in summary points
-    - The keyword should be relevant to the content and useful for categorization
-    
-    Webpage Content:
+    - Avoid filler language
+    - Focus on the most useful information only
+    - Do not include conclusion or closing remarks
+    - Use clear and natural language
+    - Follow instruction_prompt response style naturally
+
+    IMPORTANT:
+    - Prioritize clarity and usefulness
+    - Maintain clean formatting
+    - Avoid markdown-heavy formatting
+    - Keep the response easy to scan
+
+    WEBPAGE CONTENT:
     {article_text[:15000]}
     """
 
