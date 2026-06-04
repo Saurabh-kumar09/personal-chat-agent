@@ -9,7 +9,7 @@ Features:
 - Short-term memory support to enable context-aware and session-persistent interactions.
 
 
-01-06-2026:
-Up next: working on memory support for chatbot
+05-06-2026:
+Up next: feature optimization
 
 Queued tasks: v1 integration arc - feature completion + code cleanup
