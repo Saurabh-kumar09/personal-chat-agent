@@ -2,8 +2,7 @@ from telegram import Update
 from telegram.ext import (
     ContextTypes,
 )
-
-from src.bot import handle_user_message, save_to_sheet, summarize_url
+from src.helpers import handle_user_message, summarize_url, save_to_sheet
 from src.chat_engine import generate_chat_response
 from src.save_to_sheet import add_thoughts_to_sheet, add_todo_to_sheet, add_url_to_sheet
 
