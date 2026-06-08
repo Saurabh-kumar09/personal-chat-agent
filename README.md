@@ -9,7 +9,7 @@ Features:
 - Short-term memory support to enable context-aware and session-persistent interactions.
 
 
-08-06-2026:
-Up next: error handling
+09-06-2026:
+Up next: gemini ai api issue fix and code review.
 
-Queued tasks: v1 integration arc - feature flow + code review and error handling
+Queued tasks: v1 integration arc - feature flow + code review.
