@@ -35,9 +35,10 @@ def save_todo(update, context):
     pass
 
 
-# Handler for responding to user with summary of URL content and saving URL + keyword to sheet
 async def handle_summarize_url(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
     user_message = await handle_user_message(update, context)
+
     if not user_message.startswith("http"):
         await update.message.reply_text(
             "Please send a valid URL starting with http or https."
@@ -45,9 +46,17 @@ async def handle_summarize_url(update: Update, context: ContextTypes.DEFAULT_TYP
         return
 
     result = summarize_url(user_message)
+
     summary = result["summary"]
     keyword = result["keyword"]
+
     print(f"Extracted keyword: {keyword}")
-    add_url_to_sheet(user_message, keyword)
+
+    url_saved = add_url_to_sheet(user_message, keyword)
+
+    if not url_saved:
+        return False
+
     await update.message.reply_text(summary)
+
     print(f'Bot: "{summary}"')
