@@ -9,7 +9,7 @@ Features:
 - Short-term memory support to enable context-aware and session-persistent interactions.
 
 
-05-06-2026:
-Up next: feature optimization
+08-06-2026:
+Up next: error handling
 
-Queued tasks: v1 integration arc - feature completion + code cleanup
+Queued tasks: v1 integration arc - feature flow + code review and error handling
