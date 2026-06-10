@@ -24,6 +24,20 @@ This module contains the main Telegram bot setup, including:
 """
 
 
+# startup handler
+async def handle_start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("""👋 Hey! How can I help you today?
+
+Choose a task to continue:
+
+1️⃣ **AI Chat** - Ask me anything! (Select Command: `/1`)
+2️⃣ **Sheet-Thought** - Save your thoughts to sheet (Select Command: `/2`)
+3️⃣ **To-Do** - Manage your to-do list (Select Command: `/3`)
+4️⃣ **Summarize URL** - Get a summary of a webpage (Select Command: `/4`)
+
+Type the command to get started! 🚀""")
+
+
 # Handler to process user command for mode selection - receives user message, sets mode in user_data and sends confirmation back to user
 async def handle_user_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_message = await handle_user_message(update, context)
@@ -80,20 +94,6 @@ async def handle_mode_specific_message(
         await update.message.reply_text(
             "Select '/start' command to get started and for instructions on how to use the bot!"
         )
-
-
-# startup handler
-async def handle_start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("""👋 Hey! How can I help you today?
-
-Choose a task to continue:
-
-1️⃣ **AI Chat** - Ask me anything! (Select Command: `/1`)
-2️⃣ **Sheet-Thought** - Save your thoughts to sheet (Select Command: `/2`)
-3️⃣ **To-Do** - Manage your to-do list (Select Command: `/3`)
-4️⃣ **Summarize URL** - Get a summary of a webpage (Select Command: `/4`)
-
-Type the command to get started! 🚀""")
 
 
 # Main function to set up the bot, register handlers and start polling for updates
