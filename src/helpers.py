@@ -60,25 +60,42 @@ async def handle_user_message(update: Update, context: ContextTypes.DEFAULT_TYPE
 
 # Function to extract text content from a URL using requests and BeautifulSoup
 def extract_text_from_url(url):
-    response = requests.get(url)
+    try:
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()  # Raise an exception for HTTP errors
 
-    soup = BeautifulSoup(response.text, "html.parser")
+        soup = BeautifulSoup(response.text, "html.parser")
 
-    # Remove unwanted tags
-    for tag in soup(["script", "style", "nav", "footer"]):
-        tag.decompose()
+        # Remove unwanted tags
+        for tag in soup(["script", "style", "nav", "footer"]):
+            tag.decompose()
 
-    text = soup.get_text(separator=" ")
+        text = soup.get_text(separator=" ")
 
-    # Clean extra spaces
-    text = " ".join(text.split())
+        # Clean extra spaces
+        text = " ".join(text.split())
 
-    return text
+        return text
+
+    except requests.exceptions.Timeout:
+        print("Failed to fetch URL: Request timed out.")
+        return None
+
+    except requests.exceptions.RequestException as error:
+        print(f"Failed to fetch URL: {error}")
+        return None
 
 
 # Function to summarize content from a URL using the generate_chat_response function with a structured prompt
 def summarize_url(url, word_limit=100):
     article_text = extract_text_from_url(url)
+
+    if not article_text:
+        return {
+            "summary": "Unable to fetch content from the provided URL.",
+            "keyword": "",
+        }
+
     keyword = ""
 
     prompt = f"""

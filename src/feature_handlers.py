@@ -50,12 +50,17 @@ async def handle_summarize_url(update: Update, context: ContextTypes.DEFAULT_TYP
     summary = result["summary"]
     keyword = result["keyword"]
 
+    if not keyword:
+        await update.message.reply_text(summary)
+        return
+
     print(f"Extracted keyword: {keyword}")
 
     url_saved = add_url_to_sheet(user_message, keyword)
 
     if not url_saved:
-        return False
+        await update.message.reply_text("Failed to save URL.")
+        return
 
     await update.message.reply_text(summary)
 
