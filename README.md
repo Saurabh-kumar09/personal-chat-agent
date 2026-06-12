@@ -18,8 +18,3 @@ Phase - Early development with integration focus
 - Telegram bot interface for chat interactions and command handling
 - Session-aware caching to preserve context across conversational turns
 - Config-driven external service setup via `integrations/` and `prompts/`
-
-#### 09-06-2026:
-Up next: gemini ai api issue fix and code review.
-
-Queued tasks: v1 integration arc - feature flow + code review.
