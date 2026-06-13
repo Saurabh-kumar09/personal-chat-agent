@@ -1,4 +1,5 @@
 from telegram import Update
+from telegram.error import InvalidToken
 from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
@@ -139,4 +140,10 @@ def main():
 
     print("Bot is running...")
 
-    app.run_polling()
+    try:
+        app.run_polling()
+    except InvalidToken as error:
+        raise SystemExit(
+            "Telegram rejected TELEGRAM_BOT_TOKEN. Check the token in your "
+            "environment and copy the real bot token from BotFather."
+        ) from error
