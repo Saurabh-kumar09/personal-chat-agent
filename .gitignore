@@ -3,8 +3,6 @@ venv/
 
 # Environment Variables
 .env
-
-# Credentials and Secrets
 credentials.json
 
 # Python
