@@ -43,11 +43,11 @@ def add_url_to_sheet(url, keyword):
 
         if url in worksheet.col_values(1):
             print(f"URL '{url}' already exists in the sheet.")
-            return False
+            return
 
         worksheet.append_row([url, keyword])
 
-        return True
+        return
 
     except gspread.exceptions.APIError as error:
         print(f"Google Sheets API error: {error}")
